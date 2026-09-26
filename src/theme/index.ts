@@ -1,0 +1,15 @@
+import { colors } from './colors';
+import { typography } from './typography';
+import { spacing } from './spacing';
+import { borderRadius } from './border-radius';
+import { shadows } from './shadows';
+
+export const theme = {
+  colors,
+  typography,
+  spacing,
+  borderRadius,
+  shadows,
+} as const;
+
+export type Theme = typeof theme;
