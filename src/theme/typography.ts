@@ -1,9 +1,9 @@
 export const typography = {
   fontFamily: {
-    regular: "Poppins-Regular",
-    medium: "Poppins-Medium",
-    semibold: "Poppins-SemiBold",
-    bold: "Poppins-Bold",
+    poppinsRegular: "Poppins-Regular",
+    poppinsMedium: "Poppins-Medium",
+    poppinsSemibold: "Poppins-SemiBold",
+    poppinsBold: "Poppins-Bold",
   },
   fontSize: {
     h1: 32,
@@ -16,10 +16,10 @@ export const typography = {
     caption: 11,
   },
   fontWeight: {
-    regular: "400",
-    medium: "500",
-    semibold: "600",
-    bold: "700",
+    poppinsRegular: "400",
+    poppinsMedium: "500",
+    poppinsSemibold: "600",
+    poppinsBold: "700",
   },
   lineHeight: {
     h1: 1.2,
