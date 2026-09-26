@@ -3,3 +3,190 @@
 @import "tailwindcss/utilities.css";
 
 @import "nativewind/theme";
+
+@theme {
+  /* Brand Colors */
+  --color-brand-purple: #6c4ef5;
+  --color-brand-deep-purple: #5b3bf6;
+  --color-brand-blue: #4d8bff;
+  --color-brand-green: #21c16b;
+
+  /* Semantic Colors */
+  --color-semantic-success: #21c16b;
+  --color-semantic-warning: #ffc800;
+  --color-semantic-streak: #ff8a00;
+  --color-semantic-error: #ff4d4f;
+  --color-semantic-info: #4d8bff;
+
+  /* Neutral Colors */
+  --color-neutral-text-primary: #0d132b;
+  --color-neutral-text-secondary: #687280;
+  --color-neutral-border: #e5e7eb;
+  --color-neutral-surface: #f6f7fb;
+  --color-neutral-background: #ffffff;
+
+  /* Overlay Colors */
+  --color-overlay-light: rgba(0, 0, 0, 0.4);
+  --color-overlay-medium: rgba(0, 0, 0, 0.6);
+  --color-overlay-dark: rgba(0, 0, 0, 0.8);
+
+  /* Font Family */
+  --font-poppins-regular: "Poppins-Regular";
+  --font-poppins-medium: "Poppins-Medium";
+  --font-poppins-semibold: "Poppins-SemiBold";
+  --font-poppins-bold: "Poppins-Bold";
+
+  /* Font Sizes */
+  --font-size-h1: 32px;
+  --font-size-h2: 24px;
+  --font-size-h3: 20px;
+  --font-size-h4: 16px;
+  --font-size-body-large: 16px;
+  --font-size-body-medium: 14px;
+  --font-size-body-small: 13px;
+  --font-size-caption: 11px;
+
+  /* Line Heights */
+  --line-height-h1: 1.2;
+  --line-height-h2: 1.3;
+  --line-height-h3: 1.3;
+  --line-height-h4: 1.4;
+  --line-height-body-large: 1.6;
+  --line-height-body-medium: 1.6;
+  --line-height-body-small: 1.6;
+  --line-height-caption: 1.4;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.5px;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.5px;
+
+  /* Border Radius */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --spacing-0: 0;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+}
+
+/* Utility Classes - BEM Methodology */
+
+/* Card Utilities */
+.card {
+  @apply bg-neutral-surface rounded-xl shadow-md;
+}
+
+.card--elevated {
+  @apply shadow-lg;
+}
+
+.card--flat {
+  @apply shadow-none;
+}
+
+/* Button Utilities */
+.btn {
+  @apply rounded-xl px-6 py-3 font-poppins-medium;
+}
+
+.btn--primary {
+  @apply bg-brand-purple text-white;
+}
+
+.btn--secondary {
+  @apply bg-brand-blue text-white;
+}
+
+.btn--success {
+  @apply bg-semantic-success text-white;
+}
+
+.btn--warning {
+  @apply bg-semantic-warning text-neutral-text-primary;
+}
+
+.btn--error {
+  @apply bg-semantic-error text-white;
+}
+
+.btn--outline {
+  @apply border-2 border-brand-purple text-brand-purple;
+}
+
+.btn--ghost {
+  @apply bg-transparent text-brand-purple;
+}
+
+/* Text Utilities */
+.text--h1 {
+  @apply text-[32px] leading-[1.2] font-poppins-bold;
+}
+
+.text--h2 {
+  @apply text-[24px] leading-[1.3] font-poppins-semibold;
+}
+
+.text--h3 {
+  @apply text-[20px] leading-[1.3] font-poppins-semibold;
+}
+
+.text--h4 {
+  @apply text-[16px] leading-[1.4] font-poppins-medium;
+}
+
+.text--body-large {
+  @apply text-[16px] leading-[1.6] font-poppins-regular;
+}
+
+.text--body-medium {
+  @apply text-[14px] leading-[1.6] font-poppins-regular;
+}
+
+.text--body-small {
+  @apply text-[13px] leading-[1.6] font-poppins-regular;
+}
+
+.text--caption {
+  @apply text-[11px] leading-[1.4] font-poppins-regular;
+}
+
+/* Spacing Utilities */
+.container {
+  @apply px-4;
+}
+
+.section {
+  @apply py-6;
+}
+
+/* Shadow Utilities */
+.shadow--card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.shadow--elevated {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.shadow--floating {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
