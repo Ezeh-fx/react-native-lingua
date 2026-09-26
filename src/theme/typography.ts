@@ -15,12 +15,6 @@ export const typography = {
     bodySmall: 13,
     caption: 11,
   },
-  fontWeight: {
-    poppinsRegular: "400",
-    poppinsMedium: "500",
-    poppinsSemibold: "600",
-    poppinsBold: "700",
-  },
   lineHeight: {
     h1: 1.2,
     h2: 1.3,
