@@ -1,4 +1,5 @@
-import { ScrollView, Text, View } from "react-native";
+import { router } from "expo-router";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
   return (
@@ -7,11 +8,23 @@ export default function Index() {
         {/* Header */}
         <View className="container section">
           <Text className="text--h1 text-neutral-text-primary mb-2">
-            Welcome to Lingua
+            Welcome to muolingo
           </Text>
           <Text className="text--body-medium text-neutral-text-secondary">
             Your AI-powered language learning companion
           </Text>
+        </View>
+
+        {/* Onboarding Link */}
+        <View className="container section">
+          <TouchableOpacity
+            onPress={() => router.push("/onboarding")}
+            className="btn btn--primary items-center justify-center"
+          >
+            <Text className="text--body-medium text-white">
+              View Onboarding
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Color Palette Demo */}
