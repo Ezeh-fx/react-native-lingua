@@ -2,7 +2,7 @@ import { images } from "@/constants/images";
 import cx from "clsx";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import OnboardingSwiper from "react-native-onboarding-swiper";
 
 const Dot = ({ selected }: { selected: boolean; isLight: boolean }) => (
@@ -40,15 +40,21 @@ const SpeechBubble = ({ text, left }: { text: string; left?: boolean }) => (
 );
 
 const MascotScene = () => (
-  <View className="relative mt-4 h-[380px] w-full items-center justify-center">
-    <SpeechBubble text="Hello!" left />
-    <SpeechBubble text="¡Hola!" />
-    <Image
-      source={images.mascotWelcome}
-      className="h-[350px] w-full max-w-[420px]"
-      resizeMode="contain"
-    />
-  </View>
+  <ScrollView
+    className="relative mt-4 w-full"
+    contentContainerClassName="items-center justify-center"
+    showsVerticalScrollIndicator={false}
+  >
+    <View className="min-h-[380px] w-full items-center justify-center">
+      <SpeechBubble text="Hello!" left />
+      <SpeechBubble text="¡Hola!" />
+      <Image
+        source={images.mascotWelcome}
+        className="h-[350px] w-full max-w-[420px]"
+        resizeMode="contain"
+      />
+    </View>
+  </ScrollView>
 );
 
 const HeroContent = () => (
@@ -119,7 +125,7 @@ export default function OnboardingScreen() {
   const [currentPage, setCurrentPage] = useState(0);
   const isLastPage = currentPage === pages.length - 1;
 
-  const handleDone = () => router.replace("/");
+  const handleDone = () => router.dismissTo("/");
 
   const handlePrimaryAction = () => {
     if (isLastPage) {
@@ -127,7 +133,7 @@ export default function OnboardingScreen() {
       return;
     }
 
-    swiperRef.current?.goNext();
+    swiperRef.current?.goToPage(currentPage + 1);
   };
 
   return (
