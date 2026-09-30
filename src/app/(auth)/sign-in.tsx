@@ -48,7 +48,11 @@ export default function SignInScreen() {
       }
 
       if (signIn.status === "complete") {
-        await signIn.finalize();
+        const { error: finalizeError } = await signIn.finalize();
+        if (finalizeError) {
+          setError(finalizeError.message || "Failed to complete sign in");
+          return;
+        }
         router.replace("/");
       } else if (signIn.status === "needs_first_factor") {
         // Handle first factor verification (e.g., email code, SMS)
