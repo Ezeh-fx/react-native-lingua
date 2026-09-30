@@ -1,7 +1,8 @@
 import { images } from "@/constants/images";
+import { useAuth } from "@clerk/expo";
 import cx from "clsx";
-import { router } from "expo-router";
-import { useRef, useState } from "react";
+import { Link, router } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import OnboardingSwiper from "react-native-onboarding-swiper";
 
@@ -121,18 +122,22 @@ const pages = [
 ] as const;
 
 export default function OnboardingScreen() {
+  const { isLoaded, isSignedIn } = useAuth();
   const swiperRef = useRef<OnboardingSwiper>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const isLastPage = currentPage === pages.length - 1;
 
-  const handleDone = () => router.dismissTo("/");
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.replace("/");
+    }
+  }, [isLoaded, isSignedIn]);
+
+  if (!isLoaded) {
+    return null;
+  }
 
   const handlePrimaryAction = () => {
-    if (isLastPage) {
-      handleDone();
-      return;
-    }
-
     swiperRef.current?.goToPage(currentPage + 1);
   };
 
@@ -160,14 +165,25 @@ export default function OnboardingScreen() {
       />
 
       <View className="absolute inset-x-0 bottom-0 items-center pb-5">
-        <Pressable
-          onPress={handlePrimaryAction}
-          className="w-[94%] flex-row items-center justify-between self-center rounded-[18px] bg-brand-deep-purple px-5 py-4 shadow-md"
-        >
-          <Text className="flex-1 text-center text-[26px] font-poppins-bold text-white">
-            {isLastPage ? "Get Started" : "Next"}
-          </Text>
-        </Pressable>
+        {isLastPage ? (
+          <Link
+            href="/(auth)/sign-up"
+            className="w-[94%] flex-row items-center justify-between self-center rounded-[18px] bg-brand-deep-purple px-5 py-4 shadow-md"
+          >
+            <Text className="flex-1 text-center text-[26px] font-poppins-bold text-white">
+              Get Started
+            </Text>
+          </Link>
+        ) : (
+          <Pressable
+            onPress={handlePrimaryAction}
+            className="w-[94%] flex-row items-center justify-between self-center rounded-[18px] bg-brand-deep-purple px-5 py-4 shadow-md"
+          >
+            <Text className="flex-1 text-center text-[26px] font-poppins-bold text-white">
+              Next
+            </Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );

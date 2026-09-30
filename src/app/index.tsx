@@ -1,7 +1,33 @@
+import { useAuth } from "@clerk/expo";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
+  const { isLoaded, isSignedIn } = useAuth();
+
+  useEffect(() => {
+    if (isLoaded) {
+      if (isSignedIn) {
+        // User is authenticated, they should see the home route
+        // For now, we'll keep them here since this is the home route
+        // In the future, this could redirect to a dedicated home/dashboard screen
+      } else {
+        // User is not authenticated, redirect to onboarding
+        router.replace("/onboarding");
+      }
+    }
+  }, [isLoaded, isSignedIn]);
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  // Only show content if authenticated
+  if (!isSignedIn) {
+    return null;
+  }
+
   return (
     <View className="flex-1 bg-neutral-background">
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
