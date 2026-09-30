@@ -1,13 +1,12 @@
 import { images } from "@/constants/images";
 import { useSignIn } from "@clerk/expo";
-import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   Text,
   TextInput,
@@ -25,12 +24,17 @@ export default function SignInScreen() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const [showVerification, setShowVerification] = useState(false);
-
   const [error, setError] = useState("");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSignIn = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
     setError("");
+    setIsSubmitting(true);
 
     try {
       const { error: signInError } = await signIn.create({
@@ -43,9 +47,22 @@ export default function SignInScreen() {
         return;
       }
 
-      router.replace("/");
+      if (signIn.status === "complete") {
+        await signIn.finalize();
+        router.replace("/");
+      } else if (signIn.status === "needs_first_factor") {
+        // Handle first factor verification (e.g., email code, SMS)
+        setError("Additional verification required. Please check your email.");
+      } else if (signIn.status === "needs_second_factor") {
+        // Handle two-factor authentication
+        setError("Two-factor authentication required.");
+      } else {
+        setError("Sign in failed");
+      }
     } catch (err: any) {
       setError(err?.message || "An error occurred during sign in");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -144,8 +161,8 @@ export default function SignInScreen() {
             className="bg-lingua-purple rounded-2xl py-4 items-center mt-2"
             activeOpacity={0.85}
             onPress={handleSignIn}
-            disabled={!email || !password}
-            style={{ opacity: !email || !password ? 0.6 : 1 }}
+            disabled={!email || !password || isSubmitting}
+            style={{ opacity: !email || !password || isSubmitting ? 0.6 : 1 }}
             testID="sign-in-button"
           >
             <Text className="font-poppins-semibold text-base text-white">
@@ -153,46 +170,10 @@ export default function SignInScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Separator */}
-          <View className="mb-6 flex-row items-center">
-            <View className="flex-1 h-px bg-neutral-border" />
-            <Text className="mx-4 text-[14px] font-poppins-regular text-neutral-text-secondary">
-              or continue with
-            </Text>
-            <View className="flex-1 h-px bg-neutral-border" />
-          </View>
-
-          {/* Social Login Buttons */}
-          <View className="mb-8 gap-3">
-            {/* Google */}
-            <Pressable className="flex-row items-center justify-center rounded-xl border border-neutral-border bg-white py-3.5 shadow-sm">
-              <FontAwesome5 name="google" size={20} color="#DB4437" />
-              <Text className="ml-3 text-[14px] font-poppins-medium text-neutral-text-primary">
-                Continue with Google
-              </Text>
-            </Pressable>
-
-            {/* Facebook */}
-            <Pressable className="flex-row items-center justify-center rounded-xl border border-neutral-border bg-white py-3.5 shadow-sm">
-              <FontAwesome5 name="facebook" size={20} color="#4267B2" />
-              <Text className="ml-3 text-[14px] font-poppins-medium text-neutral-text-primary">
-                Continue with Facebook
-              </Text>
-            </Pressable>
-
-            {/* Apple */}
-            <Pressable className="flex-row items-center justify-center rounded-xl border border-neutral-border bg-white py-3.5 shadow-sm">
-              <Ionicons name="logo-apple" size={20} color="#000000" />
-              <Text className="ml-3 text-[14px] font-poppins-medium text-neutral-text-primary">
-                Continue with Apple
-              </Text>
-            </Pressable>
-          </View>
-
           {/* Sign Up Link */}
           <View className="items-center">
             <Text className="text-[14px] font-poppins-regular text-neutral-text-secondary">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="./sign-up"
                 className="font-poppins-semibold text-brand-deep-purple"

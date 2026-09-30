@@ -1,19 +1,18 @@
 import VerificationModal from "@/components/verification-modal";
 import { images } from "@/constants/images";
 import { useSignUp } from "@clerk/expo";
-import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -24,7 +23,6 @@ export default function SignUpScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
-  const [_pendingEmail, setPendingEmail] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async () => {
@@ -46,11 +44,10 @@ export default function SignUpScreen() {
         setError(sendError.message || "Failed to send verification code");
         return;
       }
-      setIsLoading(false);
-      setPendingEmail(email);
       setShowVerification(true);
     } catch (err: any) {
       setError(err?.message || "An error occurred during sign up");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -204,42 +201,6 @@ export default function SignUpScreen() {
               {isLoading ? "Signing up..." : "Sign Up"}
             </Text>
           </TouchableOpacity>
-
-          {/* Separator */}
-          <View className="mb-6 flex-row items-center">
-            <View className="flex-1 h-px bg-neutral-border" />
-            <Text className="mx-4 text-[14px] font-poppins-regular text-neutral-text-secondary">
-              or continue with
-            </Text>
-            <View className="flex-1 h-px bg-neutral-border" />
-          </View>
-
-          {/* Social Login Buttons */}
-          <View className="mb-8 gap-3">
-            {/* Google */}
-            <Pressable className="flex-row items-center justify-center rounded-xl border border-neutral-border bg-white py-3.5 shadow-sm">
-              <FontAwesome5 name="google" size={20} color="#DB4437" />
-              <Text className="ml-3 text-[14px] font-poppins-medium text-neutral-text-primary">
-                Continue with Google
-              </Text>
-            </Pressable>
-
-            {/* Facebook */}
-            <Pressable className="flex-row items-center justify-center rounded-xl border border-neutral-border bg-white py-3.5 shadow-sm">
-              <FontAwesome5 name="facebook" size={20} color="#4267B2" />
-              <Text className="ml-3 text-[14px] font-poppins-medium text-neutral-text-primary">
-                Continue with Facebook
-              </Text>
-            </Pressable>
-
-            {/* Apple */}
-            <Pressable className="flex-row items-center justify-center rounded-xl border border-neutral-border bg-white py-3.5 shadow-sm">
-              <Ionicons name="logo-apple" size={20} color="#000000" />
-              <Text className="ml-3 text-[14px] font-poppins-medium text-neutral-text-primary">
-                Continue with Apple
-              </Text>
-            </Pressable>
-          </View>
 
           {/* Login Link */}
           <View className="items-center">
