@@ -1,10 +1,10 @@
+import { ClerkProvider, useAuth } from "@clerk/expo";
+import { tokenCache } from "@clerk/expo/token-cache";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
+import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import "../../global.css";
 
-// Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -15,15 +15,30 @@ export default function RootLayout() {
     "Poppins-Bold": require("../../assets/fonts/Poppins-Bold.ttf"),
   });
 
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  if (!publishableKey) {
+    throw new Error("Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY to the .env file");
+  }
+
+  const content = <RootContent fontsReady={fontsLoaded || !!fontError} />;
+
+  return (
+    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+      {content}
+    </ClerkProvider>
+  );
+}
+
+function RootContent({ fontsReady }: { fontsReady: boolean }) {
+  const { isLoaded: authLoaded } = useAuth();
+
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    if (fontsReady && authLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [authLoaded, fontsReady]);
 
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
+  if (!fontsReady || !authLoaded) return null;
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }
