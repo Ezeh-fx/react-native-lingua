@@ -1,26 +1,52 @@
+import { AuthLoadingContext } from "@/components/auth-loading-context";
 import { useAuth } from "@clerk/expo";
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function Index() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn, signOut } = useAuth();
+  const setAuthLoadingState = useContext(AuthLoadingContext);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
-    if (isLoaded) {
-      if (isSignedIn) {
-        // User is authenticated, they should see the home route
-        // For now, we'll keep them here since this is the home route
-        // In the future, this could redirect to a dedicated home/dashboard screen
-      } else {
-        // User is not authenticated, redirect to onboarding
-        router.replace("/onboarding");
-      }
+    if (isLoaded && !isSignedIn && !isSigningOut) {
+      router.replace("/(auth)/sign-in");
     }
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn, isSigningOut]);
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    setAuthLoadingState("signing-out");
+
+    try {
+      await signOut();
+      router.replace("/(auth)/sign-in");
+    } catch {
+      setAuthLoadingState("checking");
+      setIsSigningOut(false);
+    }
+  };
 
   if (!isLoaded) {
     return null;
+  }
+
+  if (isSigningOut) {
+    return (
+      <View className="flex-1 items-center justify-center bg-neutral-background">
+        <ActivityIndicator size="large" color="#6c4ef5" />
+        <Text className="text--body-medium text-neutral-text-secondary mt-4">
+          Signing out...
+        </Text>
+      </View>
+    );
   }
 
   // Only show content if authenticated
@@ -49,6 +75,18 @@ export default function Index() {
           >
             <Text className="text--body-medium text-white">
               View Onboarding
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="container section">
+          <TouchableOpacity
+            onPress={handleSignOut}
+            className="btn btn--outline items-center justify-center"
+            testID="sign-out-button"
+          >
+            <Text className="text--body-medium text-brand-purple">
+              Sign Out
             </Text>
           </TouchableOpacity>
         </View>
