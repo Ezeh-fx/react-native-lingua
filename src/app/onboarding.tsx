@@ -166,14 +166,24 @@ export default function OnboardingScreen() {
 
       <View className="absolute inset-x-0 bottom-0 items-center pb-5">
         {isLastPage ? (
-          <Link
-            href="/(auth)/sign-up"
-            className="w-[94%] flex-row items-center justify-between self-center rounded-[18px] bg-brand-deep-purple px-5 py-4 shadow-md"
-          >
-            <Text className="flex-1 text-center text-[26px] font-poppins-bold text-white">
-              Get Started
-            </Text>
-          </Link>
+          <View className="w-full items-center">
+            <Link
+              href="/(auth)/sign-up"
+              className="w-[94%] flex-row items-center justify-between self-center rounded-[18px] bg-brand-deep-purple px-5 py-4 shadow-md"
+            >
+              <Text className="flex-1 text-center text-[26px] font-poppins-bold text-white">
+                Get Started
+              </Text>
+            </Link>
+            <Link href="/(auth)/sign-in" className="mt-3 py-2">
+              <Text className="text-[14px] font-poppins-medium text-neutral-text-secondary">
+                Already have an account?{" "}
+                <Text className="font-poppins-semibold text-brand-deep-purple">
+                  Sign in
+                </Text>
+              </Text>
+            </Link>
+          </View>
         ) : (
           <Pressable
             onPress={handlePrimaryAction}

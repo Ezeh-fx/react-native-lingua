@@ -56,6 +56,7 @@ export default function SignInScreen() {
   };
 
   const handleResend = async () => {
+    setError(undefined);
     setIsLoading(true);
     try {
       const { error } = await signIn.emailCode.sendCode({
@@ -84,7 +85,7 @@ export default function SignInScreen() {
 
       const { error: finalizeError } = await signIn.finalize();
       if (finalizeError) {
-        setError(finalizeError.message || "Failed to complete sign up");
+        setError(finalizeError.message || "Failed to complete sign in");
         return false;
       }
 
@@ -146,7 +147,6 @@ export default function SignInScreen() {
             />
           </View>
 
-
           {/* Email Input */}
           <View className="mb-6">
             <Text className="mb-2 text-[14px] font-poppins-medium text-neutral-text-primary">
@@ -191,7 +191,6 @@ export default function SignInScreen() {
           </View>
 
           <GoogleSignInButton />
-
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -199,7 +198,10 @@ export default function SignInScreen() {
       <VerificationModal
         visible={showVerification}
         email={email}
-        onClose={() => setShowVerification(false)}
+        onClose={() => {
+          setShowVerification(false);
+          setError(undefined);
+        }}
         onResend={handleResend}
         onVerify={handleVerify}
         error={error}

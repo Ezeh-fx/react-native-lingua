@@ -1,8 +1,13 @@
+import {
+  AuthLoadingContext,
+  type AuthLoadingState,
+} from "@/components/auth-loading-context";
 import { ClerkProvider, useAuth } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
 import "../../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -31,14 +36,41 @@ export default function RootLayout() {
 
 function RootContent({ fontsReady }: { fontsReady: boolean }) {
   const { isLoaded: authLoaded } = useAuth();
+  const [authLoadingState, setAuthLoadingState] =
+    useState<AuthLoadingState>("checking");
+  const [previousAuthLoaded, setPreviousAuthLoaded] = useState(authLoaded);
 
   useEffect(() => {
-    if (fontsReady && authLoaded) {
+    if (fontsReady) {
       SplashScreen.hideAsync();
     }
-  }, [authLoaded, fontsReady]);
+  }, [fontsReady]);
 
-  if (!fontsReady || !authLoaded) return null;
+  if (authLoaded !== previousAuthLoaded) {
+    setPreviousAuthLoaded(authLoaded);
+    if (authLoaded) {
+      setAuthLoadingState("checking");
+    }
+  }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  if (!fontsReady) return null;
+
+  if (!authLoaded) {
+    return (
+      <View className="flex-1 items-center justify-center bg-neutral-background">
+        <ActivityIndicator size="large" color="#6c4ef5" />
+        <Text className="text--body-medium text-neutral-text-secondary mt-4">
+          {authLoadingState === "signing-out"
+            ? "Signing out..."
+            : "Checking your account..."}
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <AuthLoadingContext.Provider value={setAuthLoadingState}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </AuthLoadingContext.Provider>
+  );
 }
