@@ -1,3 +1,5 @@
+import GoogleSignInButton from "@/components/google-sign-in-button";
+import VerificationModal from "@/components/verification-modal";
 import { images } from "@/constants/images";
 import { useSignIn } from "@clerk/expo";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -17,56 +19,83 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignInScreen() {
   const { signIn } = useSignIn();
-
   const [email, setEmail] = useState("");
-
-  const [password, setPassword] = useState("");
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  const [error, setError] = useState("");
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
 
   const handleSignIn = async () => {
-    if (isSubmitting) {
-      return;
-    }
-
-    setError("");
-    setIsSubmitting(true);
+    setIsLoading(true);
+    setError(undefined);
 
     try {
-      const { error: signInError } = await signIn.create({
+      const { error: createError } = await signIn.create({
         identifier: email,
-        password,
       });
 
-      if (signInError) {
-        setError(signInError.message || "Sign in failed");
+      if (createError) {
+        setError(createError.message);
         return;
       }
 
-      if (signIn.status === "complete") {
-        const { error: finalizeError } = await signIn.finalize();
-        if (finalizeError) {
-          setError(finalizeError.message || "Failed to complete sign in");
-          return;
-        }
-        router.replace("/");
-      } else if (signIn.status === "needs_first_factor") {
-        // Handle first factor verification (e.g., email code, SMS)
-        setError("Additional verification required. Please check your email.");
-      } else if (signIn.status === "needs_second_factor") {
-        // Handle two-factor authentication
-        setError("Two-factor authentication required.");
-      } else {
-        setError("Sign in failed");
+      const { error } = await signIn.emailCode.sendCode({
+        emailAddress: email,
+      });
+
+      if (error) {
+        setError(error.message);
+        return;
+      }
+
+      setShowVerification(true);
+    } catch {
+      setError("An error occurred during sign in");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await signIn.emailCode.sendCode({
+        emailAddress: email,
+      });
+      if (error) {
+        setError(error.message || "Failed to resend code");
       }
     } catch (err: any) {
-      setError(err?.message || "An error occurred during sign in");
+      setError(err?.message || "Failed to resend code");
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerify = async (code: string): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      setError("");
+      const { error } = await signIn.emailCode.verifyCode({ code });
+
+      if (error) {
+        setError(error.message || "Invalid verification code");
+        return false;
+      }
+
+      const { error: finalizeError } = await signIn.finalize();
+      if (finalizeError) {
+        setError(finalizeError.message || "Failed to complete sign up");
+        return false;
+      }
+
+      setShowVerification(false);
+      router.replace("/");
+      return true;
+    } catch (err: any) {
+      setError(err?.message || "Verification failed");
+      return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -117,8 +146,9 @@ export default function SignInScreen() {
             />
           </View>
 
+
           {/* Email Input */}
-          <View className="mb-4">
+          <View className="mb-6">
             <Text className="mb-2 text-[14px] font-poppins-medium text-neutral-text-primary">
               Email
             </Text>
@@ -133,49 +163,22 @@ export default function SignInScreen() {
             />
           </View>
 
-          {/* Password Input */}
-          <View className="mb-6">
-            <Text className="mb-2 text-[14px] font-poppins-medium text-neutral-text-primary">
-              Password
-            </Text>
-            <View className="flex-row items-center rounded-[10px] border border-neutral-border bg-white">
-              <TextInput
-                className="flex-1 pl-3 pr-2 text-[16px] font-poppins-regular text-neutral-text-primary"
-                placeholder="••••••••"
-                placeholderTextColor="#9ca3af"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                className="px-4 py-3.5"
-              >
-                <MaterialIcons
-                  name={showPassword ? "visibility" : "visibility-off"}
-                  size={20}
-                  color="#687280"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
           {/* Sign In Button */}
           <TouchableOpacity
-            className="bg-lingua-purple rounded-2xl py-4 items-center mt-2"
+            className="bg-brand-deep-purple rounded-2xl py-4 items-center mt-2"
             activeOpacity={0.85}
             onPress={handleSignIn}
-            disabled={!email || !password || isSubmitting}
-            style={{ opacity: !email || !password || isSubmitting ? 0.6 : 1 }}
+            disabled={!email || isLoading}
+            style={{ opacity: !email || isLoading ? 0.6 : 1 }}
             testID="sign-in-button"
           >
             <Text className="font-poppins-semibold text-base text-white">
-              Sign In
+              {isLoading ? "Sending code..." : "Sign In"}
             </Text>
           </TouchableOpacity>
 
           {/* Sign Up Link */}
-          <View className="items-center">
+          <View className="items-center mt-3">
             <Text className="text-[14px] font-poppins-regular text-neutral-text-secondary">
               Don&apos;t have an account?{" "}
               <Link
@@ -186,18 +189,22 @@ export default function SignInScreen() {
               </Link>
             </Text>
           </View>
+
+          <GoogleSignInButton />
+
         </ScrollView>
       </KeyboardAvoidingView>
 
       {/* Verification Modal */}
-      {/* <VerificationModal
-        visible={showVerificationModal}
+      <VerificationModal
+        visible={showVerification}
         email={email}
-        onClose={() => setShowVerificationModal(false)}
+        onClose={() => setShowVerification(false)}
         onResend={handleResend}
         onVerify={handleVerify}
         error={error}
-      /> */}
+        isLoading={isLoading}
+      />
     </SafeAreaView>
   );
 }

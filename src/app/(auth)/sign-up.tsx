@@ -1,3 +1,4 @@
+import GoogleSignInButton from "@/components/google-sign-in-button";
 import VerificationModal from "@/components/verification-modal";
 import { images } from "@/constants/images";
 import { useSignUp } from "@clerk/expo";
@@ -5,14 +6,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -66,7 +67,7 @@ export default function SignUpScreen() {
     }
   };
 
-  const handleVerify = async (code: string) => {
+  const handleVerify = async (code: string): Promise<boolean> => {
     setIsLoading(true);
     try {
       setError("");
@@ -145,6 +146,8 @@ export default function SignUpScreen() {
             />
           </View>
 
+        
+
           {/* Email Input */}
           <View className="mb-4">
             <Text className="mb-2 text-[14px] font-poppins-medium text-neutral-text-primary">
@@ -203,7 +206,7 @@ export default function SignUpScreen() {
           </TouchableOpacity>
 
           {/* Login Link */}
-          <View className="items-center">
+          <View className="items-center mt-3">
             <Text className="text-[14px] font-poppins-regular text-neutral-text-secondary">
               Already have an account?{" "}
               <Link
@@ -214,6 +217,8 @@ export default function SignUpScreen() {
               </Link>
             </Text>
           </View>
+
+            <GoogleSignInButton />
         </ScrollView>
       </KeyboardAvoidingView>
       {/* Verification Modal */}

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn, signOut } = useAuth();
 
   useEffect(() => {
     if (isLoaded) {
@@ -49,6 +49,18 @@ export default function Index() {
           >
             <Text className="text--body-medium text-white">
               View Onboarding
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="container section">
+          <TouchableOpacity
+            onPress={() => signOut()}
+            className="btn btn--outline items-center justify-center"
+            testID="sign-out-button"
+          >
+            <Text className="text--body-medium text-brand-purple">
+              Sign Out
             </Text>
           </TouchableOpacity>
         </View>
