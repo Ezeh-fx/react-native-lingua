@@ -1,7 +1,7 @@
 import { AuthLoadingContext } from "@/components/auth-loading-context";
 import { useAuth } from "@clerk/expo";
 import { router } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -12,14 +12,20 @@ import {
 
 export default function Index() {
   const { isLoaded, isSignedIn, signOut } = useAuth();
-  const setAuthLoadingState = useContext(AuthLoadingContext);
+  const { state: authLoadingState, setState: setAuthLoadingState } =
+    useContext(AuthLoadingContext);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (isLoaded && !isSignedIn && !isSigningOut) {
-      router.replace("/(auth)/sign-in");
+    if (isLoaded && !isSignedIn && !hasRedirected.current) {
+      hasRedirected.current = true;
+      const destination =
+        authLoadingState === "signing-out" ? "/(auth)/sign-in" : "/onboarding";
+      setAuthLoadingState("checking");
+      router.replace(destination);
     }
-  }, [isLoaded, isSignedIn, isSigningOut]);
+  }, [authLoadingState, isLoaded, isSignedIn, setAuthLoadingState]);
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -27,7 +33,6 @@ export default function Index() {
 
     try {
       await signOut();
-      router.replace("/(auth)/sign-in");
     } catch {
       setAuthLoadingState("checking");
       setIsSigningOut(false);

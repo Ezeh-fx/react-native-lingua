@@ -2,6 +2,12 @@ import { createContext } from "react";
 
 export type AuthLoadingState = "checking" | "signing-out";
 
-export const AuthLoadingContext = createContext<
-  (state: AuthLoadingState) => void
->(() => {});
+interface AuthLoadingContextValue {
+  state: AuthLoadingState;
+  setState: (state: AuthLoadingState) => void;
+}
+
+export const AuthLoadingContext = createContext<AuthLoadingContextValue>({
+  state: "checking",
+  setState: () => {},
+});

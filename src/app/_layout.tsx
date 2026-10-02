@@ -38,7 +38,6 @@ function RootContent({ fontsReady }: { fontsReady: boolean }) {
   const { isLoaded: authLoaded } = useAuth();
   const [authLoadingState, setAuthLoadingState] =
     useState<AuthLoadingState>("checking");
-  const [previousAuthLoaded, setPreviousAuthLoaded] = useState(authLoaded);
 
   useEffect(() => {
     if (fontsReady) {
@@ -46,31 +45,24 @@ function RootContent({ fontsReady }: { fontsReady: boolean }) {
     }
   }, [fontsReady]);
 
-  if (authLoaded !== previousAuthLoaded) {
-    setPreviousAuthLoaded(authLoaded);
-    if (authLoaded) {
-      setAuthLoadingState("checking");
-    }
-  }
-
   if (!fontsReady) return null;
 
-  if (!authLoaded) {
-    return (
-      <View className="flex-1 items-center justify-center bg-neutral-background">
-        <ActivityIndicator size="large" color="#6c4ef5" />
-        <Text className="text--body-medium text-neutral-text-secondary mt-4">
-          {authLoadingState === "signing-out"
-            ? "Signing out..."
-            : "Checking your account..."}
-        </Text>
-      </View>
-    );
-  }
-
   return (
-    <AuthLoadingContext.Provider value={setAuthLoadingState}>
-      <Stack screenOptions={{ headerShown: false }} />
+    <AuthLoadingContext.Provider
+      value={{ state: authLoadingState, setState: setAuthLoadingState }}
+    >
+      {!authLoaded ? (
+        <View className="flex-1 items-center justify-center bg-neutral-background">
+          <ActivityIndicator size="large" color="#6c4ef5" />
+          <Text className="text--body-medium text-neutral-text-secondary mt-4">
+            {authLoadingState === "signing-out"
+              ? "Signing out..."
+              : "Checking your account..."}
+          </Text>
+        </View>
+      ) : (
+        <Stack screenOptions={{ headerShown: false }} />
+      )}
     </AuthLoadingContext.Provider>
   );
 }
