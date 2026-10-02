@@ -1,3 +1,5 @@
+import AppleSignInButton from "@/components/apple-sign-in-button";
+import FacebookSignInButton from "@/components/facebook-sign-in-button";
 import GoogleSignInButton from "@/components/google-sign-in-button";
 import VerificationModal from "@/components/verification-modal";
 import { images } from "@/constants/images";
@@ -190,7 +192,9 @@ export default function SignInScreen() {
             </Text>
           </View>
 
-          <GoogleSignInButton />
+          <AppleSignInButton showDivider={Platform.OS === "ios"} />
+          <FacebookSignInButton showDivider={Platform.OS !== "ios"} />
+          <GoogleSignInButton showDivider={false} />
         </ScrollView>
       </KeyboardAvoidingView>
 

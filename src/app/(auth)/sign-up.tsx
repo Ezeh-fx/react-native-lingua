@@ -1,3 +1,5 @@
+import AppleSignInButton from "@/components/apple-sign-in-button";
+import FacebookSignInButton from "@/components/facebook-sign-in-button";
 import GoogleSignInButton from "@/components/google-sign-in-button";
 import VerificationModal from "@/components/verification-modal";
 import { images } from "@/constants/images";
@@ -146,8 +148,6 @@ export default function SignUpScreen() {
             />
           </View>
 
-        
-
           {/* Email Input */}
           <View className="mb-4">
             <Text className="mb-2 text-[14px] font-poppins-medium text-neutral-text-primary">
@@ -218,7 +218,9 @@ export default function SignUpScreen() {
             </Text>
           </View>
 
-            <GoogleSignInButton />
+          <AppleSignInButton showDivider={Platform.OS === "ios"} />
+          <FacebookSignInButton showDivider={Platform.OS !== "ios"} />
+          <GoogleSignInButton showDivider={false} />
         </ScrollView>
       </KeyboardAvoidingView>
       {/* Verification Modal */}
