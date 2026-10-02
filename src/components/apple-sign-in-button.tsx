@@ -5,7 +5,7 @@ import {
     AppleAuthenticationButtonType,
 } from "expo-apple-authentication";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Alert, Platform, Text, View } from "react-native";
 
 interface AppleSignInButtonProps {
@@ -19,6 +19,7 @@ export default function AppleSignInButton({
 }: AppleSignInButtonProps) {
   const { startAppleAuthenticationFlow } = useSignInWithApple();
   const router = useRouter();
+  const isSigningInRef = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
 
   if (Platform.OS !== "ios") {
@@ -26,9 +27,14 @@ export default function AppleSignInButton({
   }
 
   const handleAppleSignIn = async () => {
+    if (isSigningInRef.current) {
+      return;
+    }
+
+    isSigningInRef.current = true;
     setIsLoading(true);
     try {
-      const { createdSessionId, setActive } =
+      const { createdSessionId, setActive, signIn, signUp } =
         await startAppleAuthenticationFlow();
 
       if (createdSessionId && setActive) {
@@ -38,6 +44,10 @@ export default function AppleSignInButton({
         } else {
           router.replace("/");
         }
+      } else if (signUp?.status === "missing_requirements") {
+        router.replace("/(auth)/sign-up");
+      } else if (signIn && signIn.status !== "complete") {
+        router.replace("/(auth)/sign-in");
       }
     } catch (error: unknown) {
       const details =
@@ -55,6 +65,7 @@ export default function AppleSignInButton({
       );
       console.error("Sign in with Apple error:", error);
     } finally {
+      isSigningInRef.current = false;
       setIsLoading(false);
     }
   };

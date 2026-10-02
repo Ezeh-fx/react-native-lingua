@@ -24,9 +24,8 @@ export default function FacebookSignInButton({
   const handleFacebookSignIn = async () => {
     setIsLoading(true);
     try {
-      const { createdSessionId, setActive } = await startSSOFlow({
-        strategy: "oauth_facebook",
-      });
+      const { createdSessionId, setActive, signIn, signUp, authSessionResult } =
+        await startSSOFlow({ strategy: "oauth_facebook" });
 
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
@@ -34,6 +33,12 @@ export default function FacebookSignInButton({
           onSignInComplete();
         } else {
           router.replace("/");
+        }
+      } else if (authSessionResult?.type === "success") {
+        if (signUp?.status === "missing_requirements") {
+          router.replace("/(auth)/sign-up");
+        } else if (signIn && signIn.status !== "complete") {
+          router.replace("/(auth)/sign-in");
         }
       }
     } catch (error: unknown) {
